@@ -1,9 +1,11 @@
+from __future__ import annotations
+
+import uuid
 from typing import Annotated
 
 import jwt
 from fastapi import Depends, status
 from fastapi.security import APIKeyCookie, APIKeyHeader
-from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.config import settings
@@ -12,6 +14,7 @@ from app.exceptions import APIException, ResourceNotFoundException
 from app.logging import logger
 from app.models import User
 from app.security import JWT_AUDIENCE_APP
+from app.tenancy import AuthContext, resolve_auth_context
 
 http_credentials_exception = APIException(
     status_code=status.HTTP_401_UNAUTHORIZED,
@@ -26,7 +29,11 @@ http_credentials_required_exception = APIException(
 )
 
 
-def decode_access_token(access_token: str, audience: str) -> str:
+def decode_access_token(access_token: str, audience: str) -> dict:
+    """Decode and validate a JWT, returning the full payload dict.
+
+    Returns a dict with at least ``sub`` (user id) and optionally ``org_id``.
+    """
     try:
         # Split Bearer token and get the actual token
         token_parts = access_token.split()
@@ -52,7 +59,7 @@ def decode_access_token(access_token: str, audience: str) -> str:
                 code="INVALID_TOKEN_PAYLOAD",
                 message="Token payload missing required 'sub' field",
             )
-        return sub
+        return payload
     except jwt.PyJWTError as e:
         raise APIException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -65,6 +72,8 @@ def decode_access_token(access_token: str, audience: str) -> str:
 
 
 async def get_user_by_id(user_id: str, session: DBSession) -> User:
+    from sqlalchemy import select
+
     try:
         result = await session.execute(select(User).where(User.id == user_id))
         user = result.scalars().first()
@@ -85,8 +94,8 @@ async def get_user_by_id(user_id: str, session: DBSession) -> User:
 async def get_current_user(session: DBSession, access_token: str, audience: str):
     if access_token:
         try:
-            sub = decode_access_token(access_token, audience)
-            return await get_user_by_id(user_id=sub, session=session)
+            payload = decode_access_token(access_token, audience)
+            return await get_user_by_id(user_id=payload["sub"], session=session)
         except (APIException, ResourceNotFoundException):
             # Re-raise our custom exceptions
             raise
@@ -135,9 +144,59 @@ def build_http_user_dependency(audience: str, cookie_name: str):
     return get_current_http_user
 
 
+# ---------------------------------------------------------------------------
+# App surface: user-only dependency (backwards compat with existing routes)
+# ---------------------------------------------------------------------------
+
 # App surface: `access_token` cookie, app-audience tokens.
 get_current_http_user = build_http_user_dependency(
     audience=JWT_AUDIENCE_APP, cookie_name="access_token"
 )
 
 CurrentUser = Annotated[User, Depends(get_current_http_user)]
+
+
+# ---------------------------------------------------------------------------
+# App surface: org-scoped auth context (tenancy dependency)
+# ---------------------------------------------------------------------------
+
+_app_cookie_scheme = APIKeyCookie(name="access_token", auto_error=False)
+_app_header_scheme = APIKeyHeader(name="Access-Token", auto_error=False)
+
+
+async def _get_auth_context(
+    session: DBSession,
+    access_token_cookie: str | None = Depends(_app_cookie_scheme),
+    access_token_header: str | None = Depends(_app_header_scheme),
+) -> AuthContext:
+    """Resolve a JWT to a full (user, membership, org) context.
+
+    This is the primary dependency for org-scoped app routes.
+    """
+    access_token = access_token_header or access_token_cookie or ""
+    if not access_token:
+        raise http_credentials_required_exception
+
+    try:
+        payload = decode_access_token(access_token, JWT_AUDIENCE_APP)
+        user_id = payload["sub"]
+        org_id = payload.get("org_id")
+        if not org_id:
+            raise APIException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                code="MISSING_ORG_CONTEXT",
+                message="Token missing organization context. Please log in again.",
+            )
+        return await resolve_auth_context(
+            session,
+            user_id=uuid.UUID(user_id),
+            org_id=uuid.UUID(org_id),
+        )
+    except (APIException, ResourceNotFoundException):
+        raise http_credentials_exception
+    except Exception:
+        logger.exception("Unexpected error while resolving auth context")
+        raise http_credentials_exception
+
+
+CurrentAuth = Annotated[AuthContext, Depends(_get_auth_context)]

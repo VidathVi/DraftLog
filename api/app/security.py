@@ -30,8 +30,12 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
         return False
 
 
-def generate_jwt_token(data: dict, audience: str) -> str:
+def generate_jwt_token(
+    data: dict, audience: str, *, org_id: str | None = None
+) -> str:
     to_encode = data.copy()
     expire = datetime.now(UTC) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire, "aud": audience})
+    if org_id is not None:
+        to_encode["org_id"] = org_id
     return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
