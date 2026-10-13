@@ -1,10 +1,12 @@
 import asyncio
 import logging
+import os
 import warnings
 
 import pytest
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+from sqlalchemy.pool import StaticPool
 from testcontainers.postgres import PostgresContainer
 
 from app.database import Base, get_db
@@ -44,26 +46,47 @@ warnings.filterwarnings("ignore", category=DeprecationWarning, module="asyncpg.*
 
 
 @pytest.fixture(scope="session")
-def postgres_container():
-    """Start PostgreSQL container for tests."""
-    with PostgresContainer("postgres:16") as postgres:
-        yield postgres
+def db_url():
+    """Determine test database URL: env var -> testcontainers -> sqlite in-memory."""
+    env_url = os.environ.get("TEST_DATABASE_URL")
+    if env_url:
+        yield env_url
+        return
+
+    try:
+        with PostgresContainer("postgres:16") as postgres:
+            url = postgres.get_connection_url().replace("psycopg2", "asyncpg")
+            yield url
+            return
+    except Exception as exc:  # noqa: BLE001
+        logging.getLogger(__name__).debug(
+            "Test container unavailable (%s), falling back to in-memory SQLite", exc
+        )
+
+    yield "sqlite+aiosqlite:///:memory:"
 
 
 @pytest.fixture
-async def test_engine(postgres_container):
+async def test_engine(db_url):
     """Create engine for each test to avoid event loop issues."""
-    db_url = postgres_container.get_connection_url().replace("psycopg2", "asyncpg")
-    engine = create_async_engine(
-        db_url,
-        echo=False,
-        pool_pre_ping=False,  # Disable pre-ping to avoid cleanup issues
-        pool_recycle=300,
-        pool_timeout=10,
-        pool_size=2,  # Smaller pool for tests
-        max_overflow=5,
-        connect_args={"server_settings": {"application_name": "pytest"}},
-    )
+    if "sqlite" in db_url:
+        engine = create_async_engine(
+            db_url,
+            echo=False,
+            connect_args={"check_same_thread": False},
+            poolclass=StaticPool,
+        )
+    else:
+        engine = create_async_engine(
+            db_url,
+            echo=False,
+            pool_pre_ping=False,  # Disable pre-ping to avoid cleanup issues
+            pool_recycle=300,
+            pool_timeout=10,
+            pool_size=2,  # Smaller pool for tests
+            max_overflow=5,
+            connect_args={"server_settings": {"application_name": "pytest"}},
+        )
 
     # Create tables
     async with engine.begin() as conn:

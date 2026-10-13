@@ -75,7 +75,8 @@ async def get_user_by_id(user_id: str, session: DBSession) -> User:
     from sqlalchemy import select
 
     try:
-        result = await session.execute(select(User).where(User.id == user_id))
+        uid = uuid.UUID(str(user_id))
+        result = await session.execute(select(User).where(User.id == uid))
         user = result.scalars().first()
         if not user:
             raise ResourceNotFoundException("User not found")

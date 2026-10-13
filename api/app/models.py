@@ -77,9 +77,15 @@ class Organization(IdMixin, TimestampMixin, Base):
     )
 
     # Relationships
-    memberships: Mapped[list[Membership]] = relationship(back_populates="organization")
-    teams: Mapped[list[Team]] = relationship(back_populates="organization")
-    invites: Mapped[list[Invite]] = relationship(back_populates="organization")
+    memberships: Mapped[list[Membership]] = relationship(
+        back_populates="organization", cascade="all, delete-orphan"
+    )
+    teams: Mapped[list[Team]] = relationship(
+        back_populates="organization", cascade="all, delete-orphan"
+    )
+    invites: Mapped[list[Invite]] = relationship(
+        back_populates="organization", cascade="all, delete-orphan"
+    )
 
 
 class Membership(IdMixin, TimestampMixin, Base):
@@ -163,7 +169,9 @@ class Team(IdMixin, TimestampMixin, Base):
     lead: Mapped[Membership | None] = relationship(
         foreign_keys=[lead_membership_id]
     )
-    members: Mapped[list[TeamMember]] = relationship(back_populates="team")
+    members: Mapped[list[TeamMember]] = relationship(
+        back_populates="team", cascade="all, delete-orphan"
+    )
 
 
 class TeamMember(IdMixin, TimestampMixin, Base):
@@ -219,7 +227,7 @@ class Plan(IdMixin, TimestampMixin, Base):
     membership: Mapped[Membership] = relationship()
     team: Mapped[Team] = relationship()
     tasks: Mapped[list[Task]] = relationship(
-        back_populates="plan", order_by="Task.position"
+        back_populates="plan", order_by="Task.position", cascade="all, delete-orphan"
     )
 
 

@@ -11,6 +11,23 @@ GET /health
 # Returns: 200 OK with {"status": "healthy"} when healthy
 # Returns: 503 Service Unavailable with {"status": "unhealthy"} when unhealthy
 
+** Sign up (create org or join via invite)
+POST /auth/sign-up
+Content-Type: application/json
+# Returns: 201 Created with access token, user, org, and membership
+
+{
+  "first_name": "Jane",
+  "last_name": "Doe",
+  "email": "jane@example.com",
+  "password": "Password123!",
+  "org_name": "Engineering Team"
+}
+
+** Preview invite link
+GET /invites/INVITE_TOKEN
+# Returns: 200 OK with invite public metadata (org name, role, inviter)
+
 ** Authenticate
 POST /auth
 Content-Type: application/json
@@ -29,6 +46,117 @@ POST /logout
 GET /users/self
 # Returns: 200 OK with user details
 # Requires: Authentication
+
+** Get current organization
+GET /org
+# Returns: 200 OK with organization details
+# Requires: CurrentAuth
+
+** Update organization
+PATCH /org
+Content-Type: application/json
+# Returns: 200 OK with updated organization
+# Requires: CurrentAuth (owner/admin)
+
+{
+  "name": "Updated Org Name"
+}
+
+** List organization members
+GET /org/members
+# Returns: 200 OK with list of members and users
+# Requires: CurrentAuth
+
+** Update member role
+PATCH /org/members/{{(verb-var membership-id)}}
+Content-Type: application/json
+# Returns: 200 OK with updated member
+# Requires: CurrentAuth (owner/admin permissions enforced)
+
+{
+  "org_role": "admin"
+}
+
+** Remove member
+DELETE /org/members/{{(verb-var membership-id)}}
+# Returns: 200 OK
+# Requires: CurrentAuth (owner/admin, cannot remove last owner)
+
+** List invites
+GET /org/invites
+# Returns: 200 OK with active invites
+# Requires: CurrentAuth (owner/admin)
+
+** Create invite
+POST /org/invites
+Content-Type: application/json
+# Returns: 201 Created with raw_token
+# Requires: CurrentAuth (owner/admin)
+
+{
+  "org_role": "member",
+  "expires_in_days": 7
+}
+
+** Revoke invite
+DELETE /org/invites/{{(verb-var invite-id)}}
+# Returns: 200 OK
+# Requires: CurrentAuth (owner/admin)
+
+** List teams
+GET /teams
+# Returns: 200 OK with list of teams
+# Requires: CurrentAuth
+
+** Create team
+POST /teams
+Content-Type: application/json
+# Returns: 201 Created
+# Requires: CurrentAuth (owner/admin)
+
+{
+  "name": "Backend Team"
+}
+
+** Get team details
+GET /teams/{{(verb-var team-id)}}
+# Returns: 200 OK with lead and members
+# Requires: CurrentAuth
+
+** Update team
+PATCH /teams/{{(verb-var team-id)}}
+Content-Type: application/json
+# Returns: 200 OK
+# Requires: CurrentAuth (owner/admin)
+
+{
+  "name": "Platform & Backend"
+}
+
+** Delete team
+DELETE /teams/{{(verb-var team-id)}}
+# Returns: 200 OK
+# Requires: CurrentAuth (owner/admin)
+
+** List team members
+GET /teams/{{(verb-var team-id)}}/members
+# Returns: 200 OK with members
+# Requires: CurrentAuth
+
+** Add team member
+POST /teams/{{(verb-var team-id)}}/members
+Content-Type: application/json
+# Returns: 201 Created
+# Requires: CurrentAuth (owner/admin)
+
+{
+  "membership_id": "{{(verb-var membership-id)}}"
+}
+
+** Remove team member
+DELETE /teams/{{(verb-var team-id)}}/members/{{(verb-var membership-id)}}
+# Returns: 200 OK
+# Requires: CurrentAuth (owner/admin)
 
 * Internal API                                                            :verb:
 Template http://localhost:8000/internal
