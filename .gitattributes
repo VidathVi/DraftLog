@@ -1,0 +1,5 @@
+* text=auto eol=lf
+
+# Keep reports and the build plan out of git archive submissions
+reports/ export-ignore
+Documentation/BUILD_AND_QA_PLAN.md export-ignore

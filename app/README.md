@@ -1,6 +1,6 @@
-# Launchbase App
+# DraftLog App
 
-The Launchbase frontend — a [TanStack Start](https://tanstack.com/start)
+The DraftLog frontend — a [TanStack Start](https://tanstack.com/start)
 single-page app.
 
 ## Architecture

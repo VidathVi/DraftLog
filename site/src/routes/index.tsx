@@ -70,16 +70,15 @@ function Home() {
         <div className="flex flex-col items-center gap-6">
           <Logo className="h-11" />
           <Badge variant="outline" className="rounded-full bg-background/60">
-            Full-stack monorepo template
+            AI-powered weekly planning
           </Badge>
           <h1 className="max-w-3xl text-4xl font-semibold tracking-tight text-balance sm:text-6xl">
-            Launch faster on a base that&apos;s{" "}
-            <span className="text-[#FF4F1F]">already wired</span>
+            Draft, review, and ship your{" "}
+            <span className="text-[#0EA5E9]">weekly plans</span>
           </h1>
           <p className="max-w-xl text-balance text-lg text-muted-foreground">
-            A FastAPI backend and TanStack Start frontends in one monorepo, with
-            shared tooling and opinionated defaults. Skip the plumbing and start
-            building your product.
+            DraftLog is where engineering teams draft, review, and ship their
+            weekly plans — with AI that catches vague goals before your lead does.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
             {tech.map((t) => (
@@ -131,11 +130,11 @@ function Home() {
           <pre className="overflow-x-auto px-4 py-4 font-[family-name:var(--font-geist-mono)] text-sm leading-relaxed">
             <code>
               <span className="text-muted-foreground select-none">$ </span>
-              git clone &lt;repo-url&gt; launchbase{"\n"}
+              git clone &lt;repo-url&gt; draftlog{"\n"}
               <span className="text-muted-foreground select-none">$ </span>
-              cd launchbase{"\n"}
+              cd draftlog{"\n"}
               <span className="text-muted-foreground select-none">$ </span>
-              tmuxp load <span className="text-[#FF4F1F]">.</span>
+              tmuxp load <span className="text-[#0EA5E9]">.</span>
               <span className="text-muted-foreground">
                 {"  "}# api + web, one command
               </span>
@@ -149,7 +148,7 @@ function Home() {
             <li key={item} className="flex items-start gap-2.5">
               <Check
                 aria-hidden
-                className="mt-0.5 size-4 shrink-0 text-[#FF4F1F]"
+                className="mt-0.5 size-4 shrink-0 text-[#0EA5E9]"
                 strokeWidth={2.5}
               />
               {item}

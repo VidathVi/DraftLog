@@ -11,8 +11,8 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Launchbase" },
-      { name: "description", content: "Launchbase internal console." },
+      { title: "DraftLog Internal" },
+      { name: "description", content: "DraftLog internal admin console." },
     ],
     links: [
       { rel: "stylesheet", href: appCss },

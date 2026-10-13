@@ -1,25 +1,27 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 360" width="1280" height="360" role="img" aria-label="Launchbase — a polyglot monorepo template">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 360" width="1280" height="360" role="img" aria-label="DraftLog — AI-powered weekly planning for engineering teams">
   <!--
-    Launchbase README banner — dark theme.
-    The Pad lockup (logomark + wordmark) centered on dark surface, with tagline.
-    Paper dome, Flame·dark #FF6A3D pad + "base" syllable, lifted Slate tagline.
-    Canonical geometry lives in logomark.svg / wordmark.svg.
+    DraftLog README banner — dark theme.
+    Draft Page lockup (logomark + wordmark) centered on dark surface, with tagline.
+    Paper page, Teal·dark #38BDF8 accent lines + "Log" syllable, lifted Slate tagline.
   -->
   <rect x="1" y="1" width="1278" height="358" rx="20" fill="#0F0F10" stroke="#232326" stroke-width="1"/>
 
-  <!-- Lockup: nested SVG auto-scales the 330×64 lockup coordinate system -->
+  <!-- Lockup -->
   <svg x="330" y="96" width="620" height="120" viewBox="0 0 330 64" preserveAspectRatio="xMidYMid meet" overflow="visible">
-    <g fill="#FAFAFA" transform="translate(-12 -3.5)">
-      <path d="M12 35 A20 20 0 0 1 52 35 Z"/>
-      <rect x="12" y="43" width="40" height="7" rx="3.5" fill="#FF6A3D"/>
+    <g transform="translate(-12 -3.5)">
+      <path d="M10 6 H42 L54 18 V58 H10 Z" fill="#FAFAFA"/>
+      <path d="M42 6 L54 18 H42 Z" fill="#38BDF8" opacity="0.5"/>
+      <line x1="18" y1="28" x2="48" y2="28" stroke="#38BDF8" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="18" y1="36" x2="44" y2="36" stroke="#38BDF8" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="18" y1="44" x2="38" y2="44" stroke="#38BDF8" stroke-width="2.5" stroke-linecap="round"/>
     </g>
     <text x="57" y="46" font-family="Inter, 'SF Pro Display', 'Segoe UI', system-ui, sans-serif"
           font-size="48" font-weight="600" letter-spacing="-0.8"
-          fill="#FAFAFA">Launch<tspan fill="#FF6A3D">base</tspan></text>
+          fill="#FAFAFA">Draft<tspan fill="#38BDF8">Log</tspan></text>
   </svg>
 
   <text x="640" y="256" text-anchor="middle"
         font-family="Inter, 'SF Pro Display', 'Segoe UI', system-ui, sans-serif"
         font-size="20" font-weight="500" letter-spacing="0.02em"
-        fill="#A3A3A3">A polyglot monorepo template · FastAPI + TanStack Start</text>
+        fill="#A3A3A3">AI-powered weekly planning for engineering teams</text>
 </svg>

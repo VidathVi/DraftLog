@@ -1,13 +1,12 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="branding/banner-dark.svg">
-    <img src="branding/banner-light.svg" alt="Launchbase — a polyglot monorepo template" width="100%">
+    <img src="branding/banner-light.svg" alt="DraftLog — AI-powered weekly planning for engineering teams" width="100%">
   </picture>
 </p>
 
-A pragmatic polyglot monorepo template: a FastAPI backend and TanStack Start
-frontends, with shared tooling wired for monorepo development. Opinionated
-defaults so you can skip the wiring and start building.
+AI-powered weekly planning for engineering teams. Draft, review, and ship
+your weekly plans — with AI that catches vague goals before your lead does.
 
 ## Structure
 

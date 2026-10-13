@@ -2,7 +2,7 @@ import { defineConfig } from "orval";
 
 export default defineConfig({
   // TanStack Query hooks + typed models, split per OpenAPI tag (per-domain files).
-  launchbase: {
+  draftlog: {
     input: "http://localhost:8000/app/openapi.json",
     output: {
       mode: "tags-split",
@@ -25,7 +25,7 @@ export default defineConfig({
     },
   },
   // Standalone zod schemas (request/response/params), composable for react-hook-form.
-  launchbaseZod: {
+  draftlogZod: {
     input: "http://localhost:8000/app/openapi.json",
     output: {
       mode: "tags-split",

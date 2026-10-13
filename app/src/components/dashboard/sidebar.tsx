@@ -37,7 +37,7 @@ export function Sidebar() {
   return (
     <aside className="flex h-screen w-64 shrink-0 flex-col border-r bg-background">
       <div className="flex h-16 items-center px-6">
-        <Link to="/dashboard" aria-label="Launchbase">
+        <Link to="/dashboard" aria-label="DraftLog">
           <Logo className="h-7" />
         </Link>
       </div>

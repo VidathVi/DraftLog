@@ -1,6 +1,6 @@
-# Launchbase API
+# DraftLog API
 
-The Launchbase backend — a SaaS-shaped Python service built on FastAPI.
+The DraftLog backend — a SaaS-shaped Python service built on FastAPI.
 
 ## Requirements
 
@@ -18,7 +18,7 @@ From the repo root:
 cd api
 uv sync                                  # create venv + install deps (incl. dev group)
 cp .env.example .env                     # then edit values
-createdb launchbase                      # or use psql / pgAdmin
+createdb draftlog                        # or use psql / pgAdmin
 uv run alembic upgrade head              # apply migrations
 uv run fastapi dev                       # http://localhost:8000
 ```

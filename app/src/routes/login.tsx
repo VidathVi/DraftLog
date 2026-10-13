@@ -85,7 +85,7 @@ function Login() {
               Welcome back
             </h1>
             <p className="mt-1.5 text-sm text-muted-foreground">
-              Sign in to your Launchbase console.
+              Sign in to your DraftLog account.
             </p>
           </div>
         </div>
